@@ -26,7 +26,14 @@ public class HealthSystem : MonoBehaviour, IDamageable
     // Реализация интерфейса IDamageable
     public void TakeDamage(float damage)
     {
-        if (currentHealth <= 0) return;
+        if (currentHealth <= 0) return; // Уже мёртв
+
+        // Проверяем, мёртв ли игрок (для респавна)
+        PlayerRespawn respawn = GetComponent<PlayerRespawn>();
+        if (respawn != null && respawn.IsDead)
+        {
+            return; // Не наносим урон мёртвому игроку
+        }
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
@@ -63,11 +70,11 @@ public class HealthSystem : MonoBehaviour, IDamageable
         }
         else
         {
-            // Не уничтожаем, только делаем неактивным (для игрока и баз)
-            gameObject.SetActive(false);
+            // PlayerRespawn сам скроет Renderer и отключит компоненты игрока.
+            // gameObject.SetActive(false) здесь запрещён, так как он убивает корутины!
         }
     }
-    // Метод для лечения
+
     // Метод для лечения
     public void Heal(float amount)
     {

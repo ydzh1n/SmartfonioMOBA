@@ -104,7 +104,7 @@ public class EnemyAI : MonoBehaviour
         if (damageable != null)
         {
             damageable.TakeDamage(attackDamage);
-            Debug.Log($"{gameObject.name} attacked {currentTarget.name} for {attackDamage} damage!");
+            //Debug.Log($"{gameObject.name} attacked {currentTarget.name} for {attackDamage} damage!");
         }
     }
 }

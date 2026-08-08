@@ -11,16 +11,17 @@ public class GameManager : MonoBehaviour
 
     [Header("Stats")]
     private int kills = 0;
-    private int deaths = 0;
-    private float damageDealt = 0;
+    // private int deaths = 0; // Удалено, так как не используется в текущей версии
+    private float damageDealt = 0f;
     private float gameStartTime;
     private bool isGameActive = true;
 
+    // Публичное свойство только для чтения для других скриптов
     public bool IsGameActive => isGameActive;
 
     public static GameManager Instance;
 
-void Awake()
+    void Awake()
     {
         // Singleton паттерн
         if (Instance == null)
@@ -63,10 +64,10 @@ void Awake()
     public void AddKill()
     {
         kills++;
-        Debug.Log($"Kills: {kills}");
+        // Debug.Log($"Kills: {kills}"); // Закомментировано, чтобы не спамить консоль при массовых убийствах
     }
 
-    // Вызывается когда игрок получает урон
+    // Вызывается когда игрок наносит урон
     public void AddDamageDealt(float damage)
     {
         damageDealt += damage;
@@ -75,28 +76,27 @@ void Awake()
     // Победа
     void Victory()
     {
-        if (!isGameActive) return;
+        if (!isGameActive) return; // Защита от двойного срабатывания
         isGameActive = false;
 
         float gameTime = Time.time - gameStartTime;
-        Debug.Log($"VICTORY! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
+        Debug.Log($"VICTORY! Kills: {kills}, Damage: {damageDealt:F1}, Time: {gameTime:F1}s");
 
-        // Показываем экран победы
         if (endScreenUI != null)
         {
             endScreenUI.ShowEndScreen(true, kills, damageDealt, gameTime);
         }
     }
+
     // Поражение
     void GameOver()
     {
-        if (!isGameActive) return;
+        if (!isGameActive) return; // Защита от двойного срабатывания
         isGameActive = false;
 
         float gameTime = Time.time - gameStartTime;
-        Debug.Log($"DEFEAT! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
+        Debug.Log($"DEFEAT! Kills: {kills}, Damage: {damageDealt:F1}, Time: {gameTime:F1}s");
 
-        // Показываем экран поражения
         if (endScreenUI != null)
         {
             endScreenUI.ShowEndScreen(false, kills, damageDealt, gameTime);

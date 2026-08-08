@@ -48,7 +48,7 @@ public class PlayerAbilities : MonoBehaviour
             baseAttackDamage = playerAttack.attackDamage;
         }
 
-        Debug.Log("PlayerAbilities initialized!");
+        //Debug.Log("PlayerAbilities initialized!");
     }
 
     void Update()
@@ -87,7 +87,7 @@ public class PlayerAbilities : MonoBehaviour
     {
         isTeleporting = true;
         teleportStartTime = Time.time;
-        Debug.Log("Teleport started! Stay still and don't take damage for 3 seconds...");
+        //Debug.Log("Teleport started! Stay still and don't take damage for 3 seconds...");
 
         if (teleportStatusText != null)
         {
@@ -104,7 +104,7 @@ public class PlayerAbilities : MonoBehaviour
         lastTeleportTime = Time.time;
         isTeleporting = false;
 
-        Debug.Log("Teleport completed!");
+        //Debug.Log("Teleport completed!");
 
         if (teleportStatusText != null)
         {
@@ -115,7 +115,7 @@ public class PlayerAbilities : MonoBehaviour
     void CancelTeleport()
     {
         isTeleporting = false;
-        Debug.Log("Teleport cancelled!");
+        //Debug.Log("Teleport cancelled!");
 
         if (teleportStatusText != null)
         {
@@ -156,7 +156,7 @@ public class PlayerAbilities : MonoBehaviour
             playerAttack.attackDamage = baseAttackDamage * 2f;
         }
 
-        Debug.Log("PowerSlash activated! Double damage and range for 5 seconds!");
+        //Debug.Log("PowerSlash activated! Double damage and range for 5 seconds!");
     }
 
     void DeactivatePowerSlash()
@@ -170,7 +170,7 @@ public class PlayerAbilities : MonoBehaviour
             playerAttack.attackDamage = baseAttackDamage;
         }
 
-        Debug.Log("PowerSlash ended.");
+        //Debug.Log("PowerSlash ended.");
     }
 
     // ============ œ–Œ¬≈– » ============

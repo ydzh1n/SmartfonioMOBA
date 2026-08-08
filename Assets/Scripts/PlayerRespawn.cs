@@ -81,7 +81,7 @@ public class PlayerRespawn : MonoBehaviour
             {
                 int secondsLeft = Mathf.CeilToInt(respawnTimeRemaining);
                 respawnTimerText.text = "Respawning in " + secondsLeft + "...";
-                Debug.Log("Timer: " + secondsLeft);
+                //Debug.Log("Timer: " + secondsLeft);
             }
 
             yield return new WaitForSeconds(0.1f);

@@ -55,7 +55,7 @@ public class PlayerAttack : MonoBehaviour
                     }
                 }
 
-                Debug.Log($"Player attacked {hit.gameObject.name} for {damage} damage!");
+                //Debug.Log($"Player attacked {hit.gameObject.name} for {damage} damage!");
             }
         }
     }

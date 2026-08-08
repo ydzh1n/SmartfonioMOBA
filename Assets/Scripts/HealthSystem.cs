@@ -62,6 +62,24 @@ public class HealthSystem : MonoBehaviour, IDamageable
             Destroy(gameObject, 0.1f);
         }
     }
+    // Метод для лечения
+    public void Heal(float amount)
+    {
+        if (currentHealth <= 0) return; // Нельзя лечить мёртвого
+
+        currentHealth += amount;
+
+        // Не позволяем здоровью превышать максимум
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        // Вызываем событие обновления UI
+        onHealthChanged?.Invoke(currentHealth);
+
+        Debug.Log($"{gameObject.name} healed for {amount} HP!");
+    }
 
     // Вспомогательный метод для получения процента здоровья (0-1)
     public float GetHealthPercentage()

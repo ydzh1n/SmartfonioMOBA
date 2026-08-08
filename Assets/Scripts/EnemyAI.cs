@@ -3,7 +3,11 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     [Header("Target Settings")]
-    public Transform target; // Цель (база игрока или игрок)
+    public Transform target; // Основная цель (база игрока)
+
+    [Header("Aggro Settings")]
+    public float aggroRange = 3f; // Радиус, в котором враг замечает игрока
+    private Transform playerTransform; // Ссылка на игрока
 
     [Header("Movement Settings")]
     public float moveSpeed = 3f;
@@ -21,6 +25,13 @@ public class EnemyAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
+        // Находим игрока
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+        }
+
         // Если цель не назначена, ищем базу игрока
         if (target == null)
         {
@@ -34,53 +45,66 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        // Если игра закончилась — враги замирают
+        // Если игра закончилась — отключаем AI
         if (GameManager.Instance != null && !GameManager.Instance.IsGameActive)
         {
-            enabled = false; // Отключаем скрипт — враг перестаёт двигаться и атаковать
+            enabled = false;
             return;
         }
 
         if (target == null) return;
 
-        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        // Проверяем, есть ли игрок рядом (агро-радиус)
+        bool playerInRange = false;
+        if (playerTransform != null && playerTransform.gameObject.activeSelf)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+            if (distanceToPlayer <= aggroRange)
+            {
+                playerInRange = true;
+            }
+        }
+
+        // Выбираем цель: игрок (если рядом) или база
+        Transform currentTarget = playerInRange ? playerTransform : target;
+
+        if (currentTarget == null) return;
+
+        float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
         if (distanceToTarget <= attackRange)
         {
-            Attack();
+            Attack(currentTarget);
         }
         else
         {
-            MoveTowardsTarget();
+            MoveTowardsTarget(currentTarget);
         }
     }
 
-    void MoveTowardsTarget()
+    void MoveTowardsTarget(Transform currentTarget)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 direction = (currentTarget.position - transform.position).normalized;
 
-        // Поворот к цели
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-        // Движение
         Vector3 movement = direction * moveSpeed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
     }
 
-    void Attack()
+    void Attack(Transform currentTarget)
     {
-        // Проверяем кулдаун атаки
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
 
         // Наносим урон цели
-        IDamageable damageable = target.GetComponent<IDamageable>();
+        IDamageable damageable = currentTarget.GetComponent<IDamageable>();
         if (damageable != null)
         {
             damageable.TakeDamage(attackDamage);
-            Debug.Log($"{gameObject.name} attacked {target.name} for {attackDamage} damage!");
+            Debug.Log($"{gameObject.name} attacked {currentTarget.name} for {attackDamage} damage!");
         }
     }
 }

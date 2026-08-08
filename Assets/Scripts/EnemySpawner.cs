@@ -10,7 +10,26 @@ public class EnemySpawner : MonoBehaviour
     [Header("Spawn Area")]
     public Vector2 spawnAreaSize = new Vector2(5, 5); // Область спавна
 
+    [Header("Player Safety")]
+    public float minDistanceFromPlayer = 8f; // Минимальное расстояние от игрока
+
     private float lastSpawnTime = 0f;
+    private Transform playerTransform;
+
+    void Start()
+    {
+        // Находим игрока
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+            Debug.Log("EnemySpawner: Player found!");
+        }
+        else
+        {
+            Debug.LogWarning("EnemySpawner: Player not found! Spawning without distance check.");
+        }
+    }
 
     void Update()
     {
@@ -24,9 +43,15 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnWave()
     {
-        for (int i = 0; i < enemiesPerWave; i++)
+        int spawnedCount = 0;
+        int maxAttempts = enemiesPerWave * 5; // Максимум попыток (чтобы не зациклиться)
+        int attempts = 0;
+
+        while (spawnedCount < enemiesPerWave && attempts < maxAttempts)
         {
-            // Случайная позиция в области спавна
+            attempts++;
+
+            // Генерируем случайную позицию в области спавна
             Vector3 randomOffset = new Vector3(
                 Random.Range(-spawnAreaSize.x, spawnAreaSize.x),
                 0,
@@ -34,6 +59,19 @@ public class EnemySpawner : MonoBehaviour
             );
 
             Vector3 spawnPosition = transform.position + randomOffset;
+
+            // Проверяем расстояние до игрока
+            if (playerTransform != null)
+            {
+                float distanceToPlayer = Vector3.Distance(spawnPosition, playerTransform.position);
+
+                // Если слишком близко к игроку — пробуем другую позицию
+                if (distanceToPlayer < minDistanceFromPlayer)
+                {
+                    Debug.Log($"Attempt {attempts}: Too close to player ({distanceToPlayer:F1}m), retrying...");
+                    continue;
+                }
+            }
 
             // Создаём врага
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
@@ -48,8 +86,18 @@ public class EnemySpawner : MonoBehaviour
                     ai.target = playerBase.transform;
                 }
             }
+
+            spawnedCount++;
+            Debug.Log($"Spawned enemy {spawnedCount}/{enemiesPerWave} at {spawnPosition}");
         }
 
-        Debug.Log($"Spawned wave of {enemiesPerWave} enemies!");
+        if (spawnedCount < enemiesPerWave)
+        {
+            Debug.LogWarning($"Could only spawn {spawnedCount}/{enemiesPerWave} enemies (max attempts reached)");
+        }
+        else
+        {
+            Debug.Log($"Spawned wave of {enemiesPerWave} enemies!");
+        }
     }
 }

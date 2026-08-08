@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("UI")]
+    public EndScreenUI endScreenUI;
+
     [Header("Game Settings")]
     public GameObject playerBase;
     public GameObject enemyBase;
@@ -77,10 +80,12 @@ public class GameManager : MonoBehaviour
         float gameTime = Time.time - gameStartTime;
         Debug.Log($"VICTORY! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
 
-        // Здесь будет показан экран победы
-        ShowEndScreen(true);
+        // Показываем экран победы
+        if (endScreenUI != null)
+        {
+            endScreenUI.ShowEndScreen(true, kills, damageDealt, gameTime);
+        }
     }
-
     // Поражение
     void GameOver()
     {
@@ -90,28 +95,10 @@ public class GameManager : MonoBehaviour
         float gameTime = Time.time - gameStartTime;
         Debug.Log($"DEFEAT! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
 
-        // Здесь будет показан экран поражения
-        ShowEndScreen(false);
-    }
-
-    void ShowEndScreen(bool isVictory)
-    {
-        float gameTime = Time.time - gameStartTime;
-
-        // Временно просто выводим в консоль
-        Debug.Log("=== GAME END ===");
-        Debug.Log($"Result: {(isVictory ? "VICTORY" : "DEFEAT")}");
-        Debug.Log($"Kills: {kills}");
-        Debug.Log($"Damage Dealt: {damageDealt}");
-        Debug.Log($"Time: {gameTime:F1} seconds");
-        Debug.Log("================");
-
-        // Перезапуск игры через 3 секунды
-        Invoke(nameof(RestartGame), 3f);
-    }
-
-    void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Показываем экран поражения
+        if (endScreenUI != null)
+        {
+            endScreenUI.ShowEndScreen(false, kills, damageDealt, gameTime);
+        }
     }
 }

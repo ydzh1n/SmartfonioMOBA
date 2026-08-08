@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Settings")]
     public float moveSpeed = 6f;
     public float rotationSpeed = 10f;
+    public float LastMoveTime { get; private set; } = 0f; // Время последнего движения
 
     [Header("Boundaries")]
     public float minX = -50f;
@@ -32,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (moveDirection.magnitude > 0)
         {
+            LastMoveTime = Time.time;
             // Поворот
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);

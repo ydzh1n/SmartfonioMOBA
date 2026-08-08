@@ -7,7 +7,7 @@ public class TestDamage : MonoBehaviour
     void Update()
     {
         // Нажми T чтобы нанести урон ближайшему IDamageable
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             // Находим все объекты с HealthSystem
             HealthSystem[] healthSystems = FindObjectsOfType<HealthSystem>();

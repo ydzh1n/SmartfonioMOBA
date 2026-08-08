@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.Events;
 
 public class HealthSystem : MonoBehaviour, IDamageable
@@ -6,35 +6,36 @@ public class HealthSystem : MonoBehaviour, IDamageable
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
+    public float LastDamageTime { get; private set; } = -10f; // Р’СЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РїРѕР»СѓС‡РµРЅРЅРѕРіРѕ СѓСЂРѕРЅР°
 
     [Header("Death Settings")]
-    [SerializeField] private bool destroyOnDeath = true; // Уничтожать объект при смерти
+    [SerializeField] private bool destroyOnDeath = true; // РЈРЅРёС‡С‚РѕР¶Р°С‚СЊ РѕР±СЉРµРєС‚ РїСЂРё СЃРјРµСЂС‚Рё
 
     [Header("Events")]
     public UnityEvent onDamageTaken;
     public UnityEvent onDeath;
-    public UnityEvent<float> onHealthChanged; // Передаёт текущее здоровье
+    public UnityEvent<float> onHealthChanged; // РџРµСЂРµРґР°С‘С‚ С‚РµРєСѓС‰РµРµ Р·РґРѕСЂРѕРІСЊРµ
 
     void Start()
     {
         currentHealth = maxHealth;
-        // Сообщаем UI о текущем здоровье при старте/респавне
+        // РЎРѕРѕР±С‰Р°РµРј UI Рѕ С‚РµРєСѓС‰РµРј Р·РґРѕСЂРѕРІСЊРµ РїСЂРё СЃС‚Р°СЂС‚Рµ/СЂРµСЃРїР°РІРЅРµ
         onHealthChanged?.Invoke(currentHealth);
     }
 
-    // Реализация интерфейса IDamageable
+    // Р РµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° IDamageable
     public void TakeDamage(float damage)
     {
-        if (currentHealth <= 0) return; // Уже мёртв
+        if (currentHealth <= 0) return;
 
         currentHealth -= damage;
-        currentHealth = Mathf.Max(0, currentHealth); // Не уходим в минус
+        currentHealth = Mathf.Max(0, currentHealth);
 
-        // Вызываем события
+        LastDamageTime = Time.time;
+
         onDamageTaken?.Invoke();
         onHealthChanged?.Invoke(currentHealth);
 
-        // Проверяем смерть
         if (currentHealth <= 0)
         {
             Die();
@@ -62,29 +63,29 @@ public class HealthSystem : MonoBehaviour, IDamageable
         }
         else
         {
-            // Не уничтожаем, только делаем неактивным (для игрока и баз)
+            // РќРµ СѓРЅРёС‡С‚РѕР¶Р°РµРј, С‚РѕР»СЊРєРѕ РґРµР»Р°РµРј РЅРµР°РєС‚РёРІРЅС‹Рј (РґР»СЏ РёРіСЂРѕРєР° Рё Р±Р°Р·)
             gameObject.SetActive(false);
         }
     }
-    // Метод для лечения
-    // Метод для лечения
+    // РњРµС‚РѕРґ РґР»СЏ Р»РµС‡РµРЅРёСЏ
+    // РњРµС‚РѕРґ РґР»СЏ Р»РµС‡РµРЅРёСЏ
     public void Heal(float amount)
     {
         currentHealth += amount;
 
-        // Не позволяем здоровью превышать максимум
+        // РќРµ РїРѕР·РІРѕР»СЏРµРј Р·РґРѕСЂРѕРІСЊСЋ РїСЂРµРІС‹С€Р°С‚СЊ РјР°РєСЃРёРјСѓРј
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
 
-        // Вызываем событие обновления UI
+        // Р’С‹Р·С‹РІР°РµРј СЃРѕР±С‹С‚РёРµ РѕР±РЅРѕРІР»РµРЅРёСЏ UI
         onHealthChanged?.Invoke(currentHealth);
 
         Debug.Log($"{gameObject.name} healed for {amount} HP!");
     }
 
-    // Вспомогательный метод для получения процента здоровья (0-1)
+    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕС†РµРЅС‚Р° Р·РґРѕСЂРѕРІСЊСЏ (0-1)
     public float GetHealthPercentage()
     {
         return currentHealth / maxHealth;

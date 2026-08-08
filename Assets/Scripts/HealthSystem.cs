@@ -7,6 +7,9 @@ public class HealthSystem : MonoBehaviour, IDamageable
     [SerializeField] private float maxHealth = 100f;
     private float currentHealth;
 
+    [Header("Death Settings")]
+    [SerializeField] private bool destroyOnDeath = true; // Уничтожать объект при смерти
+
     [Header("Events")]
     public UnityEvent onDamageTaken;
     public UnityEvent onDeath;
@@ -15,6 +18,8 @@ public class HealthSystem : MonoBehaviour, IDamageable
     void Start()
     {
         currentHealth = maxHealth;
+        // Сообщаем UI о текущем здоровье при старте/респавне
+        onHealthChanged?.Invoke(currentHealth);
     }
 
     // Реализация интерфейса IDamageable
@@ -51,22 +56,20 @@ public class HealthSystem : MonoBehaviour, IDamageable
         onDeath?.Invoke();
         Debug.Log($"{gameObject.name} died!");
 
-        // Базы не уничтожаем, только врагов и игрока
-        if (gameObject.CompareTag("Base"))
-        {
-            GetComponent<Renderer>().material.color = Color.gray;
-            GetComponent<Collider>().enabled = false;
-        }
-        else
+        if (destroyOnDeath)
         {
             Destroy(gameObject, 0.1f);
         }
+        else
+        {
+            // Не уничтожаем, только делаем неактивным (для игрока и баз)
+            gameObject.SetActive(false);
+        }
     }
+    // Метод для лечения
     // Метод для лечения
     public void Heal(float amount)
     {
-        if (currentHealth <= 0) return; // Нельзя лечить мёртвого
-
         currentHealth += amount;
 
         // Не позволяем здоровью превышать максимум

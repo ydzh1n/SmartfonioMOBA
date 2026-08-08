@@ -29,27 +29,35 @@ public class PlayerAttack : MonoBehaviour
 
     void Attack()
     {
-        // Проверяем кулдаун
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
 
-        // Ищем всех врагов в радиусе атаки
         Collider[] hitColliders = Physics.OverlapSphere(playerTransform.position, attackRange);
 
         foreach (Collider hit in hitColliders)
         {
-            // Проверяем, есть ли у объекта HealthSystem и это не игрок
             HealthSystem health = hit.GetComponent<HealthSystem>();
             if (health != null && hit.gameObject != gameObject)
             {
-                health.TakeDamage(attackDamage);
-                Debug.Log($"Player attacked {hit.gameObject.name} for {attackDamage} damage!");
+                float damage = attackDamage;
+                health.TakeDamage(damage);
+
+                // Добавляем урон в статистику
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.AddDamageDealt(damage);
+
+                    // Проверяем, умер ли враг
+                    if (health.GetCurrentHealth() <= 0)
+                    {
+                        GameManager.Instance.AddKill();
+                    }
+                }
+
+                Debug.Log($"Player attacked {hit.gameObject.name} for {damage} damage!");
             }
         }
-
-        // Визуальный эффект атаки
-        Debug.Log("Player attacked!");
     }
 
     // Визуализация радиуса атаки в редакторе

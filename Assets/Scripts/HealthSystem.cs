@@ -1,0 +1,60 @@
+using UnityEngine;
+using UnityEngine.Events;
+
+public class HealthSystem : MonoBehaviour, IDamageable
+{
+    [Header("Health Settings")]
+    [SerializeField] private float maxHealth = 100f;
+    private float currentHealth;
+
+    [Header("Events")]
+    public UnityEvent onDamageTaken;
+    public UnityEvent onDeath;
+    public UnityEvent<float> onHealthChanged; // Передаёт текущее здоровье
+
+    void Start()
+    {
+        currentHealth = maxHealth;
+    }
+
+    // Реализация интерфейса IDamageable
+    public void TakeDamage(float damage)
+    {
+        if (currentHealth <= 0) return; // Уже мёртв
+
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth); // Не уходим в минус
+
+        // Вызываем события
+        onDamageTaken?.Invoke();
+        onHealthChanged?.Invoke(currentHealth);
+
+        // Проверяем смерть
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public void Die()
+    {
+        onDeath?.Invoke();
+        Debug.Log($"{gameObject.name} died!");
+    }
+
+    // Вспомогательный метод для получения процента здоровья (0-1)
+    public float GetHealthPercentage()
+    {
+        return currentHealth / maxHealth;
+    }
+}

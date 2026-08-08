@@ -8,17 +8,15 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
     private Vector3 moveDirection;
-    private Camera mainCamera;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        mainCamera = Camera.main;
     }
 
     void Update()
     {
-        // Движение через WASD
+        // Получаем ввод с клавиатуры
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -29,13 +27,18 @@ public class PlayerMovement : MonoBehaviour
     {
         if (moveDirection.magnitude > 0)
         {
-            // Поворот
+            // Поворот в направлении движения
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
 
-            // Движение
+            // Перемещение
             Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
             rb.MovePosition(transform.position + movement);
+        }
+        else
+        {
+            // Останавливаем игрока, если нет ввода
+            rb.linearVelocity = Vector3.zero;
         }
     }
 }

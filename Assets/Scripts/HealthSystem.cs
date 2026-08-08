@@ -50,6 +50,17 @@ public class HealthSystem : MonoBehaviour, IDamageable
     {
         onDeath?.Invoke();
         Debug.Log($"{gameObject.name} died!");
+
+        // Базы не уничтожаем, только врагов и игрока
+        if (gameObject.CompareTag("Base"))
+        {
+            GetComponent<Renderer>().material.color = Color.gray;
+            GetComponent<Collider>().enabled = false;
+        }
+        else
+        {
+            Destroy(gameObject, 0.1f);
+        }
     }
 
     // Вспомогательный метод для получения процента здоровья (0-1)

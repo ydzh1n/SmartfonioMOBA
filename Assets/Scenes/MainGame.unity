@@ -489,7 +489,10 @@ MonoBehaviour:
   target: {fileID: 2049107866}
   offset: {x: 0, y: 20, z: -15}
   smoothSpeed: 5
-  lookAtTarget: 1
+  cameraMinX: -32
+  cameraMaxX: 32
+  cameraMinZ: -50
+  cameraMaxZ: 20
 --- !u!1 &1866665190
 GameObject:
   m_ObjectHideFlags: 0
@@ -754,6 +757,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 6
   rotationSpeed: 10
+  minX: -48
+  maxX: 48
+  minZ: -47
+  maxZ: 47
 --- !u!54 &2049107862
 Rigidbody:
   m_ObjectHideFlags: 0

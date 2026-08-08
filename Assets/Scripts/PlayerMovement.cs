@@ -6,6 +6,12 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 6f;
     public float rotationSpeed = 10f;
 
+    [Header("Boundaries")]
+    public float minX = -50f;
+    public float maxX = 50f;
+    public float minZ = -50f;
+    public float maxZ = 50f;
+
     private Rigidbody rb;
     private Vector3 moveDirection;
 
@@ -16,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Получаем ввод с клавиатуры
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -27,17 +32,23 @@ public class PlayerMovement : MonoBehaviour
     {
         if (moveDirection.magnitude > 0)
         {
-            // Поворот в направлении движения
+            // Поворот
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
 
-            // Перемещение
+            // Движение
             Vector3 movement = moveDirection * moveSpeed * Time.fixedDeltaTime;
-            rb.MovePosition(transform.position + movement);
+            Vector3 newPosition = transform.position + movement;
+
+            // Ограничиваем позицию границами карты
+            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+            newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
+
+            rb.MovePosition(newPosition);
         }
         else
         {
-            // Останавливаем игрока, если нет ввода
+            // Остановка
             rb.linearVelocity = Vector3.zero;
         }
     }

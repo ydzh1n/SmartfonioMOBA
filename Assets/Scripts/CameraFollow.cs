@@ -3,34 +3,44 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Target Settings")]
-    public Transform target; // Объект, за которым следует камера
+    public Transform target;
 
     [Header("Offset Settings")]
-    public Vector3 offset = new Vector3(0, 15, -10); // Смещение камеры относительно игрока
+    public Vector3 offset = new Vector3(0, 20, -15);
 
     [Header("Smooth Settings")]
-    public float smoothSpeed = 5f; // Плавность следования
+    public float smoothSpeed = 10f;
 
-    [Header("Look Settings")]
-    public bool lookAtTarget = true; // Камера смотрит на игрока
+    [Header("Camera Boundaries")]
+    public float cameraMinX = -32f;
+    public float cameraMaxX = 32f;
+    public float cameraMinZ = -32f;
+    public float cameraMaxZ = 32f;
+
+    void Start()
+    {
+        // Сразу устанавливаем камеру на правильную позицию
+        if (target != null)
+        {
+            Vector3 startPosition = target.position + offset;
+            startPosition.x = Mathf.Clamp(startPosition.x, cameraMinX, cameraMaxX);
+            startPosition.z = Mathf.Clamp(startPosition.z, cameraMinZ, cameraMaxZ);
+            transform.position = startPosition;
+        }
+    }
 
     void LateUpdate()
     {
         if (target != null)
         {
-            // Вычисляем целевую позицию камеры
             Vector3 desiredPosition = target.position + offset;
 
-            // Плавное перемещение камеры
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+            // Ограничиваем камеру границами
+            desiredPosition.x = Mathf.Clamp(desiredPosition.x, cameraMinX, cameraMaxX);
+            desiredPosition.z = Mathf.Clamp(desiredPosition.z, cameraMinZ, cameraMaxZ);
 
-            transform.position = smoothedPosition;
-
-            // Камера смотрит на игрока
-            if (lookAtTarget)
-            {
-                transform.LookAt(target);
-            }
+            // Плавное перемещение
+            transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
         }
     }
 }

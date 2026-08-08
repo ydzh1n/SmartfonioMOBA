@@ -33,7 +33,12 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
-        // Проверяем время для спавна
+        // Если игра закончилась — не спавним
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameActive)
+        {
+            return;
+        }
+
         if (Time.time - lastSpawnTime >= spawnInterval)
         {
             SpawnWave();

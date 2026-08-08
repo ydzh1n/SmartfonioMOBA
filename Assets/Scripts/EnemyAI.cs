@@ -34,18 +34,23 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        // ≈сли игра закончилась Ч враги замирают
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameActive)
+        {
+            enabled = false; // ќтключаем скрипт Ч враг перестаЄт двигатьс€ и атаковать
+            return;
+        }
+
         if (target == null) return;
 
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
-        // ≈сли в радиусе атаки Ч атакуем
         if (distanceToTarget <= attackRange)
         {
             Attack();
         }
         else
         {
-            // »наче Ч двигаемс€ к цели
             MoveTowardsTarget();
         }
     }

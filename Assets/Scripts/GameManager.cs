@@ -1,14 +1,13 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
+п»їusing UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("UI")]
-    public EndScreenUI endScreenUI;
-
     [Header("Game Settings")]
     public GameObject playerBase;
     public GameObject enemyBase;
+
+    [Header("UI")]
+    public EndScreenUI endScreenUI;
 
     [Header("Stats")]
     private int kills = 0;
@@ -17,11 +16,13 @@ public class GameManager : MonoBehaviour
     private float gameStartTime;
     private bool isGameActive = true;
 
+    public bool IsGameActive => isGameActive;
+
     public static GameManager Instance;
 
-    void Awake()
+void Awake()
     {
-        // Singleton паттерн
+        // Singleton РїР°С‚С‚РµСЂРЅ
         if (Instance == null)
         {
             Instance = this;
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour
     {
         gameStartTime = Time.time;
 
-        // Подписываемся на события смерти баз
+        // РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° СЃРѕР±С‹С‚РёСЏ СЃРјРµСЂС‚Рё Р±Р°Р·
         if (playerBase != null)
         {
             HealthSystem playerBaseHealth = playerBase.GetComponent<HealthSystem>();
@@ -58,20 +59,20 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game started!");
     }
 
-    // Вызывается когда игрок убивает врага
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РєРѕРіРґР° РёРіСЂРѕРє СѓР±РёРІР°РµС‚ РІСЂР°РіР°
     public void AddKill()
     {
         kills++;
         Debug.Log($"Kills: {kills}");
     }
 
-    // Вызывается когда игрок получает урон
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РєРѕРіРґР° РёРіСЂРѕРє РїРѕР»СѓС‡Р°РµС‚ СѓСЂРѕРЅ
     public void AddDamageDealt(float damage)
     {
         damageDealt += damage;
     }
 
-    // Победа
+    // РџРѕР±РµРґР°
     void Victory()
     {
         if (!isGameActive) return;
@@ -80,13 +81,13 @@ public class GameManager : MonoBehaviour
         float gameTime = Time.time - gameStartTime;
         Debug.Log($"VICTORY! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
 
-        // Показываем экран победы
+        // РџРѕРєР°Р·С‹РІР°РµРј СЌРєСЂР°РЅ РїРѕР±РµРґС‹
         if (endScreenUI != null)
         {
             endScreenUI.ShowEndScreen(true, kills, damageDealt, gameTime);
         }
     }
-    // Поражение
+    // РџРѕСЂР°Р¶РµРЅРёРµ
     void GameOver()
     {
         if (!isGameActive) return;
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour
         float gameTime = Time.time - gameStartTime;
         Debug.Log($"DEFEAT! Kills: {kills}, Damage: {damageDealt}, Time: {gameTime:F1}s");
 
-        // Показываем экран поражения
+        // РџРѕРєР°Р·С‹РІР°РµРј СЌРєСЂР°РЅ РїРѕСЂР°Р¶РµРЅРёСЏ
         if (endScreenUI != null)
         {
             endScreenUI.ShowEndScreen(false, kills, damageDealt, gameTime);

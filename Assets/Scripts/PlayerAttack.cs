@@ -38,17 +38,17 @@ public class PlayerAttack : MonoBehaviour
         foreach (Collider hit in hitColliders)
         {
             HealthSystem health = hit.GetComponent<HealthSystem>();
-            if (health != null && hit.gameObject != gameObject)
+
+            // Проверяем: есть ли у объекта HealthSystem, это не сам игрок, это НЕ база игрока (PlayerBase)
+            if (health != null && hit.gameObject != gameObject && !hit.gameObject.name.Contains("PlayerBase"))
             {
                 float damage = attackDamage;
                 health.TakeDamage(damage);
 
-                // Добавляем урон в статистику
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.AddDamageDealt(damage);
 
-                    // Проверяем, умер ли враг
                     if (health.GetCurrentHealth() <= 0)
                     {
                         GameManager.Instance.AddKill();
